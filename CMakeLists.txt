@@ -10,18 +10,18 @@ set (CMAKE_CXX_STANDARD 17)
 # Add header files
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/include/constants.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/ContourTree.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/ContourTreeData.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/DisjointSets.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/Grid3D.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/HyperVolume.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/MergeTree.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/Persistence.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/ScalarFunction.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/SimFunction.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/SimplifyCT.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/TopologicalFeatures.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/TriMesh.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ContourTree.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ContourTreeData.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/DisjointSets.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Grid3D.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/HyperVolume.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/MergeTree.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Persistence.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ScalarFunction.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/SimFunction.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/SimplifyCT.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/TopologicalFeatures.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/TriMesh.h
 )
 
 # Add source files

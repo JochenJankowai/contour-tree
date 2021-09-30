@@ -24,7 +24,7 @@ void MergeTree::computeTree(ScalarFunction* data, TreeType type) {
     setupData();
     orderVertices();
     switch(type) {
-    case TypeContourTree:
+        case TreeType::ContourTree:
         computeJoinTree();
         nodes = DisjointSets<int64_t>(noVertices);
         computeSplitTree();
@@ -32,11 +32,11 @@ void MergeTree::computeTree(ScalarFunction* data, TreeType type) {
         ctree.computeCT();
         break;
 
-    case TypeSplitTree:
+    case TreeType::SplitTree:
         computeSplitTree();
         break;
 
-    case TypeJoinTree:
+    case TreeType::JoinTree:
         computeJoinTree();
         break;
 
@@ -126,7 +126,7 @@ void MergeTree::computeSplitTree() {
 
 void MergeTree::generateArrays(TreeType tree)
 {
-    if(tree == TypeContourTree) {
+    if (tree == TreeType::ContourTree) {
         ctree.generateArrays();
         return;
     }
@@ -163,7 +163,7 @@ void MergeTree::generateArrays(TreeType tree)
     scalar_t minf = data->getFunctionValue(sv[0]);
     scalar_t maxf = data->getFunctionValue(sv[noVertices-1]);
     if(newVertex) {
-        if(tree == TypeJoinTree){
+        if (tree == TreeType::JoinTree) {
             nodeids[nct] = noVertices;
             nodefns[nct] = minf;
             nodeTypes[nct] = MINIMUM;
@@ -179,7 +179,7 @@ void MergeTree::generateArrays(TreeType tree)
         }
     }
     if(newVertex) {
-        if(tree != TypeJoinTree){
+        if (tree != TreeType::JoinTree) {
             nodeids[nct] = noVertices;
             nodefns[nct] = maxf;
             nodeTypes[nct] = MAXIMUM;
@@ -187,7 +187,7 @@ void MergeTree::generateArrays(TreeType tree)
         }
     }
 
-    if(tree == TypeJoinTree) {
+    if (tree == TreeType::JoinTree) {
         uint32_t arcNo = 0;
         for(int64_t i = 0;i < noVertices;i ++) {
             if((criticalPts[i] == MAXIMUM || criticalPts[i] == SADDLE) && i != sv[0]) {
@@ -255,7 +255,7 @@ void MergeTree::generateArrays(TreeType tree)
 }
 
 void MergeTree::writeToFile(const std::string fileName, TreeType tree){
-    if(tree == TypeContourTree) {
+    if (tree == TreeType::ContourTree) {
         ctree.writeToFile(fileName);
         return;
     }

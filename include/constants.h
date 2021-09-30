@@ -1,19 +1,16 @@
-#ifndef CONSTANTS_H
-#define CONSTANTS_H
+#pragma once
 
 namespace contourtree {
 
-const char REGULAR = 0;
-const char MINIMUM = 1;
-const char MAXIMUM = 2;
-const char SADDLE = 4;
+static constexpr char REGULAR = 0;
+static constexpr char MINIMUM = 1;
+static constexpr char MAXIMUM = 2;
+static constexpr char SADDLE = 4;
 
 // Following the nomenclature of original Carr paper.
 // JoinTree -> maxima and SplitTree -> minima
-enum TreeType {TypeJoinTree, TypeSplitTree, TypeContourTree};
+enum class TreeType {JoinTree, SplitTree, ContourTree};
 
 typedef float scalar_t;
 
 }
-
-#endif // CONSTANTS_H
