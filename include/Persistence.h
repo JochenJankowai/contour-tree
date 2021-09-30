@@ -1,8 +1,8 @@
 #ifndef PERSISTENCE_HPP
 #define PERSISTENCE_HPP
 
-#include "SimFunction.hpp"
-#include "ContourTreeData.hpp"
+#include "SimFunction.h"
+#include "ContourTreeData.h"
 
 namespace contourtree {
 

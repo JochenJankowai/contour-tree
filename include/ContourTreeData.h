@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <string>
 #include <constants.h>
+#include "MergeTree.h"
 
 namespace contourtree {
 
@@ -24,6 +25,8 @@ class ContourTreeData
 {
 public:
     ContourTreeData();
+    ContourTreeData(const ContourTree &CT);
+    ContourTreeData(const MergeTree &CT);
 
     void loadBinFile(std::string fileName);
     void loadTxtFile(std::string fileName);

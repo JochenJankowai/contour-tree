@@ -1,8 +1,8 @@
 #ifndef SIMPLIFYCT_HPP
 #define SIMPLIFYCT_HPP
 
-#include "ContourTreeData.hpp"
-#include "SimFunction.hpp"
+#include "ContourTreeData.h"
+#include "SimFunction.h"
 #include <queue>
 #include <vector>
 
@@ -30,7 +30,8 @@ public:
     void setInput(ContourTreeData *data);
     void simplify(SimFunction *simFn);
     void simplify(const std::vector<uint32_t> &order, int topk = -1, float th = 0, const std::vector<float> &wts = std::vector<float>());
-    void outputOrder(std::string fileName);
+    void computeWeights();
+    void writeToFile(const std::string fileName);
 
 protected:
     void initSimplification(SimFunction *f);
@@ -56,6 +57,7 @@ public:
 
     std::priority_queue<uint32_t,std::vector<uint32_t>,BranchCompare> queue;
     std::vector<uint32_t> order;
+    std::vector<float> weights;
     std::vector<std::vector<uint32_t>> vArray;
 };
 

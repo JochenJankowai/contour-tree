@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
 
 namespace contourtree {
 
@@ -9,8 +10,10 @@ const char SADDLE = 4;
 
 // Following the nomenclature of original Carr paper.
 // JoinTree -> maxima and SplitTree -> minima
-enum class TreeType {JoinTree, SplitTree, ContourTree};
+enum TreeType {TypeJoinTree, TypeSplitTree, TypeContourTree};
 
 typedef float scalar_t;
 
 }
+
+#endif // CONSTANTS_H

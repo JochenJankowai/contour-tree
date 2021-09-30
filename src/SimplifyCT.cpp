@@ -1,4 +1,4 @@
-#include "SimplifyCT.hpp"
+#include "SimplifyCT.h"
 
 #include <cassert>
 #include <fstream>
@@ -251,32 +251,34 @@ void SimplifyCT::simplify(const std::vector<uint32_t> &order, int topk, float th
     }
 }
 
-void SimplifyCT::outputOrder(std::string fileName) {
+void SimplifyCT::computeWeights() {
+    weights.clear();
+    for(size_t i = 0;i < order.size();i ++) {
+        uint32_t ano = order.at(i);
+        float val = this->simFn->getBranchWeight(ano);
+        weights.push_back(val);
+    }
+
+    // normalize weights
+    float maxWt = weights.at(weights.size() - 1);
+    if(maxWt == 0) maxWt = 1;
+    for(int i = 0;i < weights.size();i ++) {
+        weights[i] /= maxWt;
+    }
+}
+
+void SimplifyCT::writeToFile(const std::string fileName) {
     std::cout << "Writing meta data" << std::endl;
     {
         std::ofstream pr(fileName + ".order.dat");
         pr << order.size() << "\n";
         pr.close();
     }
-    std::vector<float> wts;
-    for(size_t i = 0;i < order.size();i ++) {
-        uint32_t ano = order.at(i);
-        float val = this->simFn->getBranchWeight(ano);
-        wts.push_back(val);
-    }
-
-    // normalize weights
-    float maxWt = wts.at(wts.size() - 1);
-    if(maxWt == 0) maxWt = 1;
-    for(int i = 0;i < wts.size();i ++) {
-        wts[i] /= maxWt;
-    }
-
     std::cout << "writing tree output" << std::endl;
     std::string binFile = fileName + ".order.bin";
     std::ofstream of(binFile,std::ios::binary);
     of.write((char *)order.data(),order.size() * sizeof(uint32_t));
-    of.write((char *)wts.data(),wts.size() * sizeof(float));
+    of.write((char *)weights.data(),weights.size() * sizeof(float));
     of.close();
 }
 

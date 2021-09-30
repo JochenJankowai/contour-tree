@@ -1,4 +1,4 @@
-#include "TriMesh.hpp"
+#include "TriMesh.h"
 
 #include <fstream>
 #include <iostream>

@@ -1,4 +1,4 @@
-#include "Persistence.hpp"
+#include "Persistence.h"
 
 namespace contourtree {
 

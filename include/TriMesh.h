@@ -1,7 +1,7 @@
 #ifndef TRIMESH_HPP
 #define TRIMESH_HPP
 
-#include "ScalarFunction.hpp"
+#include "ScalarFunction.h"
 #include <set>
 #include<string>
 

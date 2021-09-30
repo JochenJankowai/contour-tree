@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-project(ContourTree)
+project(harishcontourtree)
 
 find_package(Qt5Core REQUIRED)
 find_package(OpenMP REQUIRED)
@@ -37,6 +37,14 @@ set(SOURCE_FILES
 )
 
 # Create library
-add_library(ContourTree STATIC ${SOURCE_FILES} ${HEADER_FILES})
+add_library(harishcontourtree STATIC ${SOURCE_FILES} ${HEADER_FILES})
 
-target_include_directories(ContourTree PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+ivw_define_standard_definitions(harishcontourtree harishcontourtree)
+ivw_suppress_compiler_warnings(harishcontourtree)
+
+target_include_directories(harishcontourtree PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+ivw_folder(harishcontourtree ext)
+
+ivw_make_package(HarishContourTree harishcontourtree)
+ivw_default_install_targets(harishcontourtree)

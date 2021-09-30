@@ -1,7 +1,7 @@
 #ifndef GRID3D_H
 #define GRID3D_H
 
-#include "ScalarFunction.hpp"
+#include "ScalarFunction.h"
 #include <stdint.h>
 #include <vector>
 #include <set>

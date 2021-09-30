@@ -3,14 +3,14 @@
 #include <fstream>
 #include <cmath>
 
-#include <MergeTree.hpp>
-#include <Grid3D.hpp>
-#include "ContourTreeData.hpp"
-#include "SimplifyCT.hpp"
-#include "Persistence.hpp"
-#include "TriMesh.hpp"
-#include "TopologicalFeatures.hpp"
-#include "HyperVolume.hpp"
+#include <MergeTree.h>
+#include <Grid3D.h>
+#include "ContourTreeData.h"
+#include "SimplifyCT.h"
+#include "Persistence.h"
+#include "TriMesh.h"
+#include "TopologicalFeatures.h"
+#include "HyperVolume.h"
 
 
 using namespace contourtree;
@@ -40,7 +40,7 @@ void exampleProcessing(std::string dataName, int dimx, int dimy, int dimz, bool 
 
     // Change to TypeJoinTree or TypeSplitTree for join and split tree computation respectively
     contourtree::TreeType tree = TypeContourTree;
-    std::cout << "computing join tree" << std::endl;
+    std::cout << "computing contour tree" << std::endl;
     ct.computeTree(&grid,tree);
     end = std::chrono::system_clock::now();
     std::cout << "Time to compute contour tree: " << std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count() << "ms\n";

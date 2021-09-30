@@ -1,4 +1,4 @@
-#include "TopologicalFeatures.hpp"
+#include "TopologicalFeatures.h"
 
 #include <fstream>
 #include <iostream>
@@ -10,7 +10,18 @@ namespace contourtree {
 
 TopologicalFeatures::TopologicalFeatures() { }
 
-void TopologicalFeatures::loadData(std::string dataLocation, bool partition) {
+void TopologicalFeatures::loadDataFromArrays(const ContourTreeData &input_ctdata, const std::vector<uint32_t> &input_order, const std::vector<float> &input_weights, bool partition) {
+    ctdata = input_ctdata;
+    order = input_order;
+    weights = input_weights;
+
+    if(partition) {
+        sim.setInput(&ctdata);
+        sim.simplify(order,1,0,weights);
+    }
+}
+
+void TopologicalFeatures::loadDataFromFile(std::string dataLocation, bool partition) {
     ctdata = ContourTreeData();
     ctdata.loadBinFile(dataLocation);
 
@@ -22,17 +33,17 @@ void TopologicalFeatures::loadData(std::string dataLocation, bool partition) {
     ip.close();
 
     order.resize(orderSize);
-    wts.resize(orderSize);
+    weights.resize(orderSize);
 
     std::string binFile = dataLocation + ".order.bin";
     std::ifstream bin(binFile, std::ios::binary);
     bin.read((char *)order.data(),order.size() * sizeof(uint32_t));
-    bin.read((char *)wts.data(),wts.size() * sizeof(float));
+    bin.read((char *)weights.data(),weights.size() * sizeof(float));
     bin.close();
 
     if(partition) {
         sim.setInput(&ctdata);
-        sim.simplify(order,1,0,wts);
+        sim.simplify(order,1,0,weights);
     }
 }
 
@@ -69,7 +80,7 @@ std::vector<Feature> TopologicalFeatures::getPartitionedExtremaFeatures(int topk
     if(topk == -1) {
         topk = 0;
         for(int i = order.size() - 1;i >= 0 ;i --) {
-            if(wts[i] > th) {
+            if(weights[i] > th) {
                 topk ++;
                 featureSet.insert(order[i]);
             } else {
@@ -111,7 +122,7 @@ std::vector<Feature> TopologicalFeatures::getArcFeatures(int topk, float th) {
     SimplifyCT sim;
     sim.setInput(&ctdata);
 
-    sim.simplify(order,topk,th,wts);
+    sim.simplify(order,topk,th,weights);
 
     std::vector<Feature> features;
     std::set<size_t> featureSet;

@@ -2,10 +2,10 @@
 #define MERGETREE_H
 
 #include "constants.h"
-#include "ScalarFunction.hpp"
+#include "ScalarFunction.h"
 #include <vector>
-#include "DisjointSets.hpp"
-#include "ContourTree.hpp"
+#include "DisjointSets.h"
+#include "ContourTree.h"
 #include <set>
 #include <string>
 
@@ -29,7 +29,8 @@ public:
     void computeTree(ScalarFunction* data, TreeType type);
     void computeJoinTree();
     void computeSplitTree();
-    void output(std::string fileName, TreeType tree);
+    void generateArrays(TreeType tree);
+    void writeToFile(const std::string fileName, TreeType tree);
 
 protected:
     void setupData();
@@ -53,6 +54,15 @@ public:
 
     std::set<int64_t> set;
     ContourTree ctree;
+    
+    uint32_t noArcs;
+    uint32_t noNodes;
+    
+    std::vector<uint32_t> arcMap;
+    std::vector<int64_t> nodeids;
+    std::vector<scalar_t> nodefns;
+    std::vector<char> nodeTypes;
+    std::vector<int64_t> arcs;
 
 private:
     std::vector<int64_t> star;

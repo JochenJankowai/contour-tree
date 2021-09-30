@@ -1,4 +1,4 @@
-#include "ContourTreeData.hpp"
+#include "ContourTreeData.h"
 
 #include <fstream>
 #include <iostream>
@@ -9,6 +9,18 @@ namespace contourtree {
 
 ContourTreeData::ContourTreeData() {
 
+}
+
+ContourTreeData::ContourTreeData(const ContourTree &CT) {
+    noNodes = CT.nodeids.size();
+    noArcs = CT.arcNo;
+    this->loadData(CT.nodeids, CT.nodefns, CT.nodeTypes, CT.arcs);  
+}
+
+ContourTreeData::ContourTreeData(const MergeTree &MT) {
+    noNodes = MT.noNodes;
+    noArcs = MT.noArcs;
+    this->loadData(MT.nodeids, MT.nodefns, MT.nodeTypes, MT.arcs);
 }
 
 void ContourTreeData::loadBinFile(std::string fileName) {
