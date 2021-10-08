@@ -131,7 +131,6 @@ void MergeTree::generateArrays(TreeType tree)
         return;
     }
     // assume size of contour tree fits within 4 bytes
-    std::vector<uint32_t> arcMap;
     if(newVertex) {
         arcMap.resize(noVertices + 1,-1);
     } else {
