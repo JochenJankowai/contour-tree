@@ -101,13 +101,16 @@ void ContourTreeData::loadData(const std::vector<int64_t> &nodeids, const std::v
     type.resize(noNodes);
     arcs.resize(noArcs);
 
-    scalar_t minf = nodefns[0];
-    scalar_t maxf = nodefns[noNodes - 1];
-    for(uint32_t i = 0;i < noNodes;i ++) {
-        assert(nodefns[i] >= minf && nodefns[i] <= maxf);
-        nodeVerts[i] = nodeids[i];
-        fnVals[i] = (float)(nodefns[i] - minf) / (maxf - minf);
-        type[i] = nodeTypes[i];
+    const scalar_t minf = nodefns[0];
+    const scalar_t maxf = nodefns[noNodes - 1];
+
+    auto [min, max] = std::minmax_element(std::begin(nodefns), std::end(nodefns));
+    assert((*min) == nodefns[0] && (*max) == nodefns[noNodes - 1]);
+
+    nodeVerts = nodeids;
+    type = nodeTypes;
+    for (uint32_t i = 0; i < noNodes; i++) {
+        fnVals[i] = (nodefns[i] - minf) / (maxf - minf);
         nodeMap[nodeVerts[i]] = i;
     }
 
