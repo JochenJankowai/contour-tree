@@ -9,8 +9,8 @@ namespace contourtree {
 class HyperVolume : public SimFunction
 {
 public:
-    HyperVolume(const ContourTreeData& ctData, const std::string partFile);
-    HyperVolume(const ContourTreeData& ctData, const std::vector<uint32_t> &cols);
+    HyperVolume(std::shared_ptr<const ContourTreeData> ctData, const std::string partFile);
+    HyperVolume(std::shared_ptr < const ContourTreeData> ctData, const std::vector<uint32_t>& cols);
 
     void init(std::vector<float> &fn, std::vector<Branch> &br);
     void update(const std::vector<Branch> &br, uint32_t brNo);

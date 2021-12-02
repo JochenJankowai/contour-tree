@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "constants.h"
+#include <memory>
 
 namespace contourtree {
 
@@ -21,7 +22,7 @@ public:
 public:
     ContourTree();
 
-    void setup(const MergeTree * tree);
+    void setup(std::shared_ptr<const MergeTree> tree);
     void computeCT();
     void generateArrays();
     void writeToFile(const std::string fileName);
@@ -33,7 +34,7 @@ private:
     void addArc(int64_t from, int64_t to);
 
 public:
-    const MergeTree * tree;
+    std::shared_ptr<const MergeTree> tree;
     std::vector<Node> nodesJoin;
     std::vector<Node> nodesSplit;
     std::vector<Node> ctNodes;

@@ -9,7 +9,7 @@ namespace contourtree {
 class Persistence : public SimFunction
 {
 public:
-    Persistence(const ContourTreeData& ctData);
+    Persistence(std::shared_ptr<const ContourTreeData> ctData);
 
     void init(std::vector<float> &fn, std::vector<Branch> &br);
     void update(const std::vector<Branch> &br, uint32_t brNo);

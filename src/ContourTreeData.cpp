@@ -4,23 +4,22 @@
 #include <iostream>
 #include <cassert>
 #include "constants.h"
+#include <algorithm>
 
 namespace contourtree {
 
-ContourTreeData::ContourTreeData() {
+ContourTreeData::ContourTreeData() {}
 
+ContourTreeData::ContourTreeData(std::shared_ptr < const ContourTree> CT) {
+    noNodes = CT->nodeids.size();
+    noArcs = CT->arcNo;
+    this->loadData(CT->nodeids, CT->nodefns, CT->nodeTypes, CT->arcs);
 }
 
-ContourTreeData::ContourTreeData(const ContourTree &CT) {
-    noNodes = CT.nodeids.size();
-    noArcs = CT.arcNo;
-    this->loadData(CT.nodeids, CT.nodefns, CT.nodeTypes, CT.arcs);  
-}
-
-ContourTreeData::ContourTreeData(const MergeTree &MT) {
-    noNodes = MT.noNodes;
-    noArcs = MT.noArcs;
-    this->loadData(MT.nodeids, MT.nodefns, MT.nodeTypes, MT.arcs);
+ContourTreeData::ContourTreeData(std::shared_ptr < const MergeTree> MT) {
+    noNodes = MT->noNodes;
+    noArcs = MT->noArcs;
+    this->loadData(MT->nodeids, MT->nodefns, MT->nodeTypes, MT->arcs);
 }
 
 void ContourTreeData::loadBinFile(std::string fileName) {
@@ -42,14 +41,14 @@ void ContourTreeData::loadBinFile(std::string fileName) {
     // read the tree
     std::string rgFile = fileName + ".rg.bin";
     std::ifstream ip(rgFile, std::ios::binary);
-    ip.read((char *)nodeids.data(),nodeids.size() * sizeof(int64_t));
-    ip.read((char *)nodefns.data(),nodeids.size() * sizeof(scalar_t));
-    ip.read((char *)nodeTypes.data(),nodeids.size());
-    ip.read((char *)arcs.data(),arcs.size() * sizeof(int64_t));
+    ip.read((char*)nodeids.data(), nodeids.size() * sizeof(int64_t));
+    ip.read((char*)nodefns.data(), nodeids.size() * sizeof(scalar_t));
+    ip.read((char*)nodeTypes.data(), nodeids.size());
+    ip.read((char*)arcs.data(), arcs.size() * sizeof(int64_t));
     ip.close();
 
     std::cout << "finished reading data" << std::endl;
-    this->loadData(nodeids,nodefns,nodeTypes,arcs);
+    this->loadData(nodeids, nodefns, nodeTypes, arcs);
 }
 
 void ContourTreeData::loadTxtFile(std::string fileName) {
@@ -62,7 +61,7 @@ void ContourTreeData::loadTxtFile(std::string fileName) {
     std::vector<char> nodeTypes(noNodes);
     std::vector<int64_t> arcs(noArcs * 2);
 
-    for(size_t i = 0;i < noNodes;i ++) {
+    for (size_t i = 0; i < noNodes; i++) {
         int64_t v;
         float fn;
         ip >> v;
@@ -70,11 +69,11 @@ void ContourTreeData::loadTxtFile(std::string fileName) {
         char t;
         std::string type;
         ip >> type;
-        if(type.compare("MINIMA") == 0) {
+        if (type.compare("MINIMA") == 0) {
             t = MINIMUM;
-        } else if(type.compare("MAXIMA") == 0) {
+        } else if (type.compare("MAXIMA") == 0) {
             t = MAXIMUM;
-        } else if(type.compare("SADDLE") == 0) {
+        } else if (type.compare("SADDLE") == 0) {
             t = SADDLE;
         } else {
             t = REGULAR;
@@ -83,7 +82,7 @@ void ContourTreeData::loadTxtFile(std::string fileName) {
         nodefns[i] = (scalar_t)(fn);
         nodeTypes[i] = t;
     }
-    for(size_t i = 0;i < noArcs;i ++) {
+    for (size_t i = 0; i < noArcs; i++) {
         int v1, v2;
         ip >> v1 >> v2;
         arcs[i * 2 + 0] = v1;
@@ -91,10 +90,13 @@ void ContourTreeData::loadTxtFile(std::string fileName) {
     }
     ip.close();
     std::cout << "finished reading data" << std::endl;
-    this->loadData(nodeids,nodefns, nodeTypes,arcs);
+    this->loadData(nodeids, nodefns, nodeTypes, arcs);
 }
 
-void ContourTreeData::loadData(const std::vector<int64_t> &nodeids, const std::vector<scalar_t> &nodefns, const std::vector<char> &nodeTypes, const std::vector<int64_t> &iarcs) {
+void ContourTreeData::loadData(const std::vector<int64_t>& nodeids,
+                               const std::vector<scalar_t>& nodefns,
+                               const std::vector<char>& nodeTypes,
+                               const std::vector<int64_t>& iarcs) {
     nodes.resize(noNodes);
     nodeVerts.resize(noNodes);
     fnVals.resize(noNodes);
@@ -109,12 +111,13 @@ void ContourTreeData::loadData(const std::vector<int64_t> &nodeids, const std::v
 
     nodeVerts = nodeids;
     type = nodeTypes;
+
     for (uint32_t i = 0; i < noNodes; i++) {
         fnVals[i] = (nodefns[i] - minf) / (maxf - minf);
         nodeMap[nodeVerts[i]] = i;
     }
 
-    for(uint32_t i = 0;i < noArcs;i ++) {
+    for (uint32_t i = 0; i < noArcs; i++) {
         arcs[i].from = nodeMap[iarcs[i * 2 + 0]];
         arcs[i].to = nodeMap[iarcs[i * 2 + 1]];
         arcs[i].id = i;
@@ -123,4 +126,4 @@ void ContourTreeData::loadData(const std::vector<int64_t> &nodeids, const std::v
     }
 }
 
-} // namespace
+}  // namespace contourtree

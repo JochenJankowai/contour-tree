@@ -17,7 +17,7 @@ MergeTree::MergeTree()
     newRoot = 0;
 }
 
-void MergeTree::computeTree(ScalarFunction* data, TreeType type) {
+void MergeTree::computeTree(std::shared_ptr<const ScalarFunction> data, TreeType type) {
     this->data = data;
     std::chrono::time_point<std::chrono::system_clock> ct, en;
     ct = std::chrono::system_clock::now();
@@ -28,7 +28,7 @@ void MergeTree::computeTree(ScalarFunction* data, TreeType type) {
         computeJoinTree();
         nodes = DisjointSets<int64_t>(noVertices);
         computeSplitTree();
-        ctree.setup(this);
+        ctree.setup(std::shared_ptr<MergeTree>(this));
         ctree.computeCT();
         break;
 

@@ -5,6 +5,7 @@
 #include "SimFunction.h"
 #include <queue>
 #include <vector>
+#include <memory>
 
 #if defined (WIN32)
 #include <functional>
@@ -16,10 +17,10 @@ class SimplifyCT;
 
 struct BranchCompare {
     BranchCompare(){}
-    BranchCompare(const SimplifyCT * simct): sim(simct) {}
+    BranchCompare(const SimplifyCT* simct): sim(simct) {}
     bool operator () (uint32_t v1, uint32_t v2);
 
-    const SimplifyCT *sim;
+    const SimplifyCT* sim;
 };
 
 class SimplifyCT
@@ -27,14 +28,14 @@ class SimplifyCT
 public:
     SimplifyCT();
 
-    void setInput(ContourTreeData *data);
-    void simplify(SimFunction *simFn);
+    void setInput(std::shared_ptr<const ContourTreeData> data);
+    void simplify(std::shared_ptr<SimFunction> simFn);
     void simplify(const std::vector<uint32_t> &order, int topk = -1, float th = 0, const std::vector<float> &wts = std::vector<float>());
     void computeWeights();
     void writeToFile(const std::string fileName);
 
 protected:
-    void initSimplification(SimFunction *f);
+    void initSimplification(std::shared_ptr<SimFunction> f);
     void addToQueue(uint32_t ano);
     bool isCandidate(const Branch &br);
     void removeArc(uint32_t ano);
@@ -44,7 +45,7 @@ public:
     bool compare(uint32_t b1, uint32_t b2) const;
 
 public:
-    const ContourTreeData *data;
+    std::shared_ptr<const ContourTreeData> data;
     std::vector<Branch> branches;
     std::vector<Node> nodes;
 
@@ -53,7 +54,7 @@ public:
     std::vector<bool> invalid;
     std::vector<bool> removed;
     std::vector<bool> inq;
-    SimFunction *simFn;
+    std::shared_ptr<SimFunction> simFn;
 
     std::priority_queue<uint32_t,std::vector<uint32_t>,BranchCompare> queue;
     std::vector<uint32_t> order;

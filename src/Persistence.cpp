@@ -2,8 +2,8 @@
 
 namespace contourtree {
 
-Persistence::Persistence(const ContourTreeData &ctData) {
-    fnVals = ctData.fnVals.data();
+Persistence::Persistence(std::shared_ptr<const ContourTreeData> ctData) {
+    fnVals = ctData->fnVals.data();
 }
 
 void Persistence::init(std::vector<float> &fn, std::vector<Branch> &br) {

@@ -6,8 +6,9 @@
 
 namespace contourtree {
 
-HyperVolume::HyperVolume(const ContourTreeData &ctData, const std::string partFile) {
-    fnVals = ctData.fnVals.data();
+HyperVolume::HyperVolume(std::shared_ptr<const ContourTreeData> ctData,
+                         const std::string partFile) {
+    fnVals = ctData->fnVals.data();
 
     std::ifstream bin(partFile, std::ios::binary| std::ios::ate);
     uint32_t size = bin.tellg();
@@ -19,15 +20,16 @@ HyperVolume::HyperVolume(const ContourTreeData &ctData, const std::string partFi
     bin.read((char *)cols.data(),size);
     bin.close();
 
-    vol.resize(ctData.noArcs,0);
-    brVol.resize(ctData.noArcs,0);
+    vol.resize(ctData->noArcs,0);
+    brVol.resize(ctData->noArcs,0);
     initVolumes(cols);
 }
 
-HyperVolume::HyperVolume(const ContourTreeData &ctData, const std::vector<uint32_t> &cols) {
-    fnVals = ctData.fnVals.data();
-    vol.resize(ctData.noArcs,0);
-    brVol.resize(ctData.noArcs,0);
+HyperVolume::HyperVolume(std::shared_ptr<const ContourTreeData> ctData,
+                         const std::vector<uint32_t>& cols) {
+    fnVals = ctData->fnVals.data();
+    vol.resize(ctData->noArcs,0);
+    brVol.resize(ctData->noArcs,0);
     initVolumes(cols);
 }
 

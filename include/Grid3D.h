@@ -1,5 +1,4 @@
-#ifndef GRID3D_H
-#define GRID3D_H
+#pragma once
 
 #include "ScalarFunction.h"
 #include <stdint.h>
@@ -22,14 +21,14 @@ public:
     Grid3D(int resx, int resy, int resz);
 
 public:
-    int getMaxDegree();
-    int getVertexCount();
-    int getStar(int64_t v, std::vector<int64_t> &star);
-    bool lessThan(int64_t v1, int64_t v2);
-    scalar_t getFunctionValue(int64_t v);
+    int getMaxDegree() const final;
+    int getVertexCount() const final;
+    int getStar(int64_t v, const std::vector<int64_t>& star) const final;
+    bool lessThan(int64_t v1, int64_t v2) const final;
+    scalar_t getFunctionValue(int64_t v) const final;
 
 public:
-    void loadGrid(std::string fileName);
+    void loadGrid(const std::string& fileName);
 
 protected:
     void updateStars();
@@ -43,7 +42,7 @@ public:
     std::vector<T> fnVals;
 
 protected:
-    inline int64_t index(int64_t x, int64_t y, int64_t z) {
+    inline int64_t index(const int64_t x, const int64_t y, const int64_t z) {
         return (x + y * dimx + z * dimx * dimy);
     }
 };
@@ -57,17 +56,17 @@ Grid3D<T>::Grid3D(int resx, int resy, int resz) :
 }
 
 template <class T>
-int Grid3D<T>::getMaxDegree() {
+int Grid3D<T>::getMaxDegree() const  {
     return 14;
 }
 
 template <class T>
-int Grid3D<T>::getVertexCount() {
+int Grid3D<T>::getVertexCount() const {
     return nv;
 }
 
 template <class T>
-int Grid3D<T>::getStar(int64_t v, std::vector<int64_t> &star) {
+int Grid3D<T>::getStar(const int64_t v, const std::vector<int64_t>& star) const {
     int z = v / (dimx * dimy);
     int rem = v % (dimx * dimy);
     int y = rem / dimx;
@@ -89,7 +88,7 @@ int Grid3D<T>::getStar(int64_t v, std::vector<int64_t> &star) {
 }
 
 template <class T>
-bool Grid3D<T>::lessThan(int64_t v1, int64_t v2) {
+bool Grid3D<T>::lessThan(const int64_t v1, const int64_t v2) const {
     if(fnVals[v1] < fnVals[v2]) {
         return true;
     } else if(fnVals[v1] == fnVals[v2]) {
@@ -99,12 +98,12 @@ bool Grid3D<T>::lessThan(int64_t v1, int64_t v2) {
 }
 
 template <class T>
-scalar_t Grid3D<T>::getFunctionValue(int64_t v) {
+scalar_t Grid3D<T>::getFunctionValue(const int64_t v) const {
     return (scalar_t) this->fnVals[v];
 }
 
 template <class T>
-void Grid3D<T>::loadGrid(std::string fileName) {
+void Grid3D<T>::loadGrid(const std::string& fileName) {
     std::ifstream ip(fileName, std::ios::binary);
     this->fnVals.resize(nv);
     ip.read((char *)fnVals.data(),nv * sizeof(T));
@@ -184,5 +183,3 @@ void Grid3D<T>::updateStars() {
 }
 
 } // namespace 
-
-#endif // GRID3D_H

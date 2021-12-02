@@ -10,7 +10,7 @@ namespace contourtree {
 
 ContourTree::ContourTree() {}
 
-void ContourTree::setup(const MergeTree *tree) {
+void ContourTree::setup(std::shared_ptr<const MergeTree> tree) {
     std::cout << "setting up merge process" << std::endl;;
     this->tree = tree;
     nv = tree->data->getVertexCount();

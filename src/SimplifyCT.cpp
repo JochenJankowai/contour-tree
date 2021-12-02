@@ -16,7 +16,7 @@ SimplifyCT::SimplifyCT() {
     order.clear();
 }
 
-void SimplifyCT::setInput(ContourTreeData *data) {
+void SimplifyCT::setInput(std::shared_ptr<const ContourTreeData> data) {
     this->data = data;
 }
 
@@ -49,7 +49,7 @@ bool SimplifyCT::isCandidate(const Branch &br) {
     return false;
 }
 
-void SimplifyCT::initSimplification(SimFunction* f) {
+void SimplifyCT::initSimplification(std::shared_ptr<SimFunction> f) {
     branches.resize(data->noArcs);
     nodes.resize(data->noNodes);
     for(uint32_t i = 0;i < branches.size();i ++) {
@@ -181,7 +181,7 @@ void SimplifyCT::mergeVertex(uint32_t v) {
     branches[rem].parent = -2;
 }
 
-void SimplifyCT::simplify(SimFunction *simFn) {
+void SimplifyCT::simplify(std::shared_ptr<SimFunction> simFn) {
     std::cout << "init" << std::endl;
     initSimplification(simFn);
 

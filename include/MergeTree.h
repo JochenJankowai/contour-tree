@@ -1,5 +1,4 @@
-#ifndef MERGETREE_H
-#define MERGETREE_H
+#pragma once
 
 #include "constants.h"
 #include "ScalarFunction.h"
@@ -8,6 +7,7 @@
 #include "ContourTree.h"
 #include <set>
 #include <string>
+#include <memory>
 
 namespace contourtree {
 
@@ -15,18 +15,18 @@ class MergeTree
 {
 public:
     struct Compare {
-        Compare(ScalarFunction *data):data(data) {}
+        Compare(std::shared_ptr<const ScalarFunction> data):data(data) {}
         bool operator () (int64_t v1, int64_t v2) {
             return data->lessThan(v1,v2);
         }
 
-        ScalarFunction *data;
+        std::shared_ptr<const ScalarFunction> data;
     };
 
 public:
     MergeTree();
 
-    void computeTree(ScalarFunction* data, TreeType type);
+    void computeTree(std::shared_ptr<const ScalarFunction> data, TreeType type);
     void computeJoinTree();
     void computeSplitTree();
     void generateArrays(TreeType tree);
@@ -39,7 +39,7 @@ protected:
     void processVertexSplit(int64_t v);
 
 public:
-    ScalarFunction* data;
+    std::shared_ptr<const ScalarFunction> data;
     std::vector<int64_t> cpMap;
     DisjointSets<int64_t> nodes;
 
@@ -69,5 +69,3 @@ private:
 };
 
 }
-
-#endif // MERGETREE_H
