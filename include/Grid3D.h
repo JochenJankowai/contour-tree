@@ -23,7 +23,7 @@ public:
 public:
     int getMaxDegree() const final;
     int getVertexCount() const final;
-    int getStar(int64_t v, const std::vector<int64_t>& star) const final;
+    int getStar(int64_t v, std::vector<int64_t>& star) const final;
     bool lessThan(int64_t v1, int64_t v2) const final;
     scalar_t getFunctionValue(int64_t v) const final;
 
@@ -66,7 +66,7 @@ int Grid3D<T>::getVertexCount() const {
 }
 
 template <class T>
-int Grid3D<T>::getStar(const int64_t v, const std::vector<int64_t>& star) const {
+int Grid3D<T>::getStar(const int64_t v, std::vector<int64_t>& star) const {
     int z = v / (dimx * dimy);
     int rem = v % (dimx * dimy);
     int y = rem / dimx;

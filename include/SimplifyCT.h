@@ -7,7 +7,7 @@
 #include <vector>
 #include <memory>
 
-#if defined (WIN32)
+#if defined(WIN32)
 #include <functional>
 #endif
 
@@ -16,28 +16,32 @@ namespace contourtree {
 class SimplifyCT;
 
 struct BranchCompare {
-    BranchCompare(){}
-    BranchCompare(const SimplifyCT* simct): sim(simct) {}
-    bool operator () (uint32_t v1, uint32_t v2);
+    BranchCompare() {}
+    BranchCompare(const SimplifyCT* simct) : sim(simct) {}
+    bool operator()(uint32_t v1, uint32_t v2);
 
     const SimplifyCT* sim;
 };
 
-class SimplifyCT
-{
+class SimplifyCT {
 public:
     SimplifyCT();
+    SimplifyCT(std::shared_ptr<const SimplifyCT> simplifyCt);
 
     void setInput(std::shared_ptr<const ContourTreeData> data);
     void simplify(std::shared_ptr<SimFunction> simFn);
-    void simplify(const std::vector<uint32_t> &order, int topk = -1, float th = 0, const std::vector<float> &wts = std::vector<float>());
-    void computeWeights();
+    void simplify(const std::vector<uint32_t>& order, int topk = -1, float threshold = 0,
+                  const std::vector<float>& weights = std::vector<float>());
+    void simplify(const std::vector<uint32_t>& order, float threshold,
+                  const std::vector<float>& weights);
+
+    void computeWeights(bool normalize = true);
     void writeToFile(const std::string fileName);
 
 protected:
     void initSimplification(std::shared_ptr<SimFunction> f);
     void addToQueue(uint32_t ano);
-    bool isCandidate(const Branch &br);
+    bool isCandidate(const Branch& br);
     void removeArc(uint32_t ano);
     void mergeVertex(uint32_t v);
 
@@ -49,19 +53,19 @@ public:
     std::vector<Branch> branches;
     std::vector<Node> nodes;
 
-    std::vector<float> fn;
+    std::shared_ptr<std::vector<float>> fn_;
     std::vector<float> fnv;
     std::vector<bool> invalid;
     std::vector<bool> removed;
     std::vector<bool> inq;
     std::shared_ptr<SimFunction> simFn;
 
-    std::priority_queue<uint32_t,std::vector<uint32_t>,BranchCompare> queue;
-    std::vector<uint32_t> order;
-    std::vector<float> weights;
+    std::priority_queue<uint32_t, std::vector<uint32_t>, BranchCompare> queue;
+    std::vector<uint32_t> order_;
+    std::vector<float> weights_;
     std::vector<std::vector<uint32_t>> vArray;
 };
 
-}
+}  // namespace contourtree
 
-#endif // SIMPLIFYCT_HPP
+#endif  // SIMPLIFYCT_HPP

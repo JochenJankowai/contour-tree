@@ -8,15 +8,17 @@
 
 namespace contourtree {
 
-ContourTreeData::ContourTreeData() {}
+ContourTreeData::ContourTreeData():fnVals(std::make_shared<std::vector<float>>()) {}
 
-ContourTreeData::ContourTreeData(std::shared_ptr < const ContourTree> CT) {
+ContourTreeData::ContourTreeData(std::shared_ptr<const ContourTree> CT)
+    : fnVals(std::make_shared<std::vector<float>>()) {
     noNodes = CT->nodeids.size();
     noArcs = CT->arcNo;
     this->loadData(CT->nodeids, CT->nodefns, CT->nodeTypes, CT->arcs);
 }
 
-ContourTreeData::ContourTreeData(std::shared_ptr < const MergeTree> MT) {
+ContourTreeData::ContourTreeData(std::shared_ptr<const MergeTree> MT)
+    : fnVals(std::make_shared<std::vector<float>>()) {
     noNodes = MT->noNodes;
     noArcs = MT->noArcs;
     this->loadData(MT->nodeids, MT->nodefns, MT->nodeTypes, MT->arcs);
@@ -99,7 +101,7 @@ void ContourTreeData::loadData(const std::vector<int64_t>& nodeids,
                                const std::vector<int64_t>& iarcs) {
     nodes.resize(noNodes);
     nodeVerts.resize(noNodes);
-    fnVals.resize(noNodes);
+    fnVals->resize(noNodes);
     type.resize(noNodes);
     arcs.resize(noArcs);
 
@@ -113,7 +115,7 @@ void ContourTreeData::loadData(const std::vector<int64_t>& nodeids,
     type = nodeTypes;
 
     for (uint32_t i = 0; i < noNodes; i++) {
-        fnVals[i] = (nodefns[i] - minf) / (maxf - minf);
+        fnVals->at(i) = (nodefns[i] - minf) / (maxf - minf);
         nodeMap[nodeVerts[i]] = i;
     }
 

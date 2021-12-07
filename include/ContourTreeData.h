@@ -11,11 +11,11 @@
 namespace contourtree {
 
 /**
- * Stores indices to parent and child nodes. Indices' target is ContourTreeData::nodes
+ * Stores indices to next and prev branches. Indices' target is SimplifyCT::branches
  */
 struct Node {
-    std::vector<uint32_t> next; /**< Indices of children nodes. */
-    std::vector<uint32_t> prev; /**< Indices of parent nodes. */
+    std::vector<uint32_t> next; /**< Indices of children branches. */
+    std::vector<uint32_t> prev; /**< Indices of parent branches. */
 };
 
 struct Arc {
@@ -45,7 +45,7 @@ public:
 
     std::vector<Arc> arcs; /**< List of arcs. */
 
-    std::vector<float> fnVals; /**< Sorted function values. */
+    std::shared_ptr<std::vector<float>> fnVals; /**< Sorted function values. */
 
     std::vector<char> type; /**< Node types, i.e., minimum, maximum, saddle. */
 

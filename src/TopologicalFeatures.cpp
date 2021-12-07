@@ -8,7 +8,7 @@
 
 namespace contourtree {
 
-TopologicalFeatures::TopologicalFeatures() {}
+TopologicalFeatures::TopologicalFeatures() { sim = std::make_shared<SimplifyCT>(); }
 
 void TopologicalFeatures::loadDataFromArrays(std::shared_ptr<const ContourTreeData> input_ctdata,
                                              const std::vector<uint32_t>& input_order,
@@ -21,7 +21,7 @@ void TopologicalFeatures::loadDataFromArrays(std::shared_ptr<const ContourTreeDa
     weights = input_weights;
 
     if (partition) {
-        sim->setInput(ctdata);
+        sim->setInput(input_ctdata);
         sim->simplify(order, 1, 0, weights);
     }
 }
