@@ -56,7 +56,6 @@ bool SimplifyCT::isCandidate(const Branch& br) {
             return true;
         }
         return false;
-        
     }
     return false;
 }
@@ -153,12 +152,17 @@ void SimplifyCT::mergeVertex(uint32_t v) {
     if (inq[prev]) {
         invalid[prev] = true;
         removed[next] = true;
-        branches[prev].to = branches[next].to;
+        branches[prev].to =
+            branches[next].to; /**< This connects the first child node to the parent node. */
         a = prev;
         rem = next;
 
+        /**
+         * Loop over all child arcs and check whether one of them was the incident arc? Doesn't make
+         * sense to me...
+         */
         for (int i = 0; i < nodes[branches[prev].to].prev.size(); i++) {
-            if (nodes[branches[prev].to].prev[i] == next) {
+            if (nodes[branches[prev].to].prev[i] == next) { /**< When would that ever happen? */
                 nodes[branches[prev].to].prev[i] = prev;
             }
         }
@@ -178,8 +182,9 @@ void SimplifyCT::mergeVertex(uint32_t v) {
             addToQueue(next);
         }
     }
-    for (int i = 0; i < branches[rem].children.size(); i++) {
-        int ch = branches[rem].children.at(i);
+    for (const auto ch : branches[rem].children) {
+        // for (int i = 0; i < branches[rem].children.size(); i++) {
+        // int ch = branches[rem].children.at(i);
         branches[a].children.push_back(ch);
         assert(branches[ch].parent == rem);
         branches[ch].parent = a;
@@ -287,6 +292,43 @@ void SimplifyCT::simplify(const std::vector<uint32_t>& order, const float thresh
 
         inq[ano] = false;
         removeArc(ano);
+    }
+}
+
+void SimplifyCT::simplify(const float value) {
+    if (!simFn) return;
+    if (simFn->simType_ != SimFunction::SimType::Persistence) return;
+
+    const auto persistenceFunction = std::dynamic_pointer_cast<contourtree::Persistence>(simFn);
+
+    queue = std::priority_queue<uint32_t, std::vector<uint32_t>, contourtree::BranchCompare>{};
+
+    // Add branches with persistence lower than value to queue
+    for (int i{0}; i < branches.size(); ++i) {
+        const auto persistence = persistenceFunction->fn_->at(i);
+
+        if (persistence < value) {
+            queue.push(i);
+        }
+    }
+
+    // Do the persistence simplification
+    while (!queue.empty()) {
+        uint32_t ano = queue.top();
+        queue.pop();
+        inq[ano] = false;
+        if (!removed[ano]) {
+            if (invalid[ano]) {
+                simFn->update(branches, ano);
+                invalid[ano] = false;
+                addToQueue(ano);
+            } else {
+                if (isCandidate(branches[ano])) {
+                    removeArc(ano);
+                    order_.push_back(ano);
+                }
+            }
+        }
     }
 }
 

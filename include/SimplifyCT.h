@@ -2,7 +2,7 @@
 #define SIMPLIFYCT_HPP
 
 #include "ContourTreeData.h"
-#include "SimFunction.h"
+#include "Persistence.h"
 #include <queue>
 #include <vector>
 #include <memory>
@@ -34,12 +34,15 @@ public:
                   const std::vector<float>& weights = std::vector<float>());
     void simplify(const std::vector<uint32_t>& order, float threshold,
                   const std::vector<float>& weights);
+    void simplify(float value);
 
     void computeWeights(bool normalize = true);
     void writeToFile(const std::string fileName);
 
-protected:
     void initSimplification(std::shared_ptr<SimFunction> f);
+
+protected:
+    
     void addToQueue(uint32_t ano);
     bool isCandidate(const Branch& br);
     void removeArc(uint32_t ano);
