@@ -54,9 +54,9 @@ bool SimplifyCT::isCandidate(const Branch& br) {
         // maximum
         if (nodes[from].next.size() > 1) {
             return true;
-        } else {
-            return false;
         }
+        return false;
+        
     }
     return false;
 }
@@ -82,7 +82,7 @@ void SimplifyCT::initSimplification(std::shared_ptr<SimFunction> f) {
     vArray.resize(nodes.size());
 
     simFn = f;
-    if (f != NULL) {
+    if (f) {
         simFn->init(fn_, branches);
 
         for (uint32_t i = 0; i < branches.size(); i++) {
@@ -93,7 +93,7 @@ void SimplifyCT::initSimplification(std::shared_ptr<SimFunction> f) {
 
 bool SimplifyCT::compare(uint32_t b1, uint32_t b2) const {
     // If I want smallest weight on top, I need to return true if b1 > b2 (sort in descending
-    // order_)
+    // order)
     if (fn_->at(b1) > fn_->at(b2)) {
         return true;
     }
