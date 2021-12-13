@@ -64,6 +64,8 @@ public:
     std::vector<char> nodeTypes;
     std::vector<int64_t> arcs;
 
+    TreeType treeType_;
+
 private:
     std::vector<int64_t> star;
 };

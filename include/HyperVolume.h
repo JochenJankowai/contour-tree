@@ -23,7 +23,6 @@ private:
     void initVolumes(const std::vector<uint32_t> &cols);
 
 public:
-    std::shared_ptr<const std::vector<float>>fnVals_;
     std::shared_ptr<std::vector<float>> fn_;
     std::vector<uint32_t> vol;
     std::vector<uint32_t> brVol;

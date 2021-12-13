@@ -3,12 +3,24 @@
 namespace contourtree {
 
 Persistence::Persistence(std::shared_ptr<const ContourTreeData> ctData)
-    : SimFunction(SimType::Persistence), fnVals_(ctData->fnVals) {}
+    : SimFunction(SimType::Persistence) {
+    fnVals_ = ctData->fnVals;
+}
 
 void Persistence::init(std::shared_ptr<std::vector<float>> fn, std::vector<Branch>& br) {
     /*I don't know what fn is supposed to be but I know that at first, fn and br have the same size. It could be persistence?*/
     fn_ = fn;
     for (size_t i = 0; i < fn->size(); i++) {
+        this->fn_->at(i) = fnVals_->at(br[i].to) - fnVals_->at(br[i].from);
+    }
+}
+
+void Persistence::init(std::vector<Branch>& br) {
+    /*I don't know what fn is supposed to be but I know that at first, fn and br have the same size.
+     * It could be persistence?*/
+    fn_ = std::make_shared<std::vector<float>>();
+    fn_->resize(br.size());
+    for (size_t i = 0; i < br.size(); i++) {
         this->fn_->at(i) = fnVals_->at(br[i].to) - fnVals_->at(br[i].from);
     }
 }

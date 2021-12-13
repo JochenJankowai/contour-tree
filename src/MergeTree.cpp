@@ -18,6 +18,7 @@ MergeTree::MergeTree()
 }
 
 void MergeTree::computeTree(std::shared_ptr<const ScalarFunction> data, TreeType type) {
+    treeType_ = type;
     this->data = data;
     std::chrono::time_point<std::chrono::system_clock> ct, en;
     ct = std::chrono::system_clock::now();

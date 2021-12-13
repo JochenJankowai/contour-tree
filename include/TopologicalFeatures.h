@@ -3,6 +3,7 @@
 #include "SimplifyCT.h"
 #include <string>
 #include <set>
+#include <stdio.h>
 
 namespace contourtree {
 
@@ -20,6 +21,12 @@ public:
                             const std::vector<float>& input_weights, bool partition = false);
     std::vector<Feature> getArcFeatures(int topk = -1, float th = 0) const;
     std::vector<Feature> getPartitionedExtremaFeatures(int topk = -1, float th = 0) const;
+    /**
+     * Performs a persistence simplification and extracts the arcs incident to the n lowest
+     * minima/highest maxima.
+     */
+    template <contourtree::TreeType T, typename ValueType>
+    std::vector<Feature> getNExtremalArcFeatures(int n, float thresold, const std::vector<ValueType>& functionValues) const;
 
 public:
     std::shared_ptr<const ContourTreeData> ctdata;
@@ -36,5 +43,35 @@ private:
     void addFeature(const SimplifyCT& sim, uint32_t bno, std::vector<Feature>& features,
                     std::set<size_t>& featureSet);
 };
+
+template <contourtree::TreeType T, typename ValueType>
+std::vector<Feature> TopologicalFeatures::getNExtremalArcFeatures(
+    int n, float thresold, const std::vector<ValueType>& functionValues) const {
+    auto features = getArcFeatures(-1, thresold);
+
+    /**
+     * For split trees we look at feature.from, for join trees we look at feature.to
+     */
+    for (const auto& feature : features) {
+        if constexpr (T == contourtree::TreeType::SplitTree) {
+            std::sort(std::begin(features), std::end(features),
+                      [&functionValues](const auto& feature1, const auto& feature2) {
+                          return functionValues[feature1.from] < functionValues[feature2.from];
+                      });
+        }
+        if constexpr (T == contourtree::TreeType::JoinTree) {
+            std::sort(std::begin(features), std::end(features),
+                      [&functionValues](const auto& feature1, const auto& feature2) {
+                          return functionValues[feature1.to] > functionValues[feature2.to];
+                      });
+        }
+    }
+
+    if (features.size() > n) {
+        features.resize(n);
+    }
+
+    return features;
+}
 
 }  // namespace contourtree

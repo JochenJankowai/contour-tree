@@ -34,11 +34,12 @@ public:
                   const std::vector<float>& weights = std::vector<float>());
     void simplify(const std::vector<uint32_t>& order, float threshold,
                   const std::vector<float>& weights);
-    void simplify(float value);
 
-    void computeWeights(bool normalize = true);
+    void computeWeights();
     void writeToFile(const std::string fileName);
 
+    void init();
+    void setSimplificationFunction(std::shared_ptr<SimFunction> f);
     void initSimplification(std::shared_ptr<SimFunction> f);
 
 protected:

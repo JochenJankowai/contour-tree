@@ -9,7 +9,7 @@ namespace contourtree {
 
 bool BranchCompare::operator()(uint32_t v1, uint32_t v2) { return sim->compare(v1, v2); }
 
-SimplifyCT::SimplifyCT() : fn_(std::make_shared<std::vector<float>>()) {
+SimplifyCT::SimplifyCT() : fn_(std::make_shared<std::vector<float>>()), simFn(nullptr) {
     queue =
         std::priority_queue<uint32_t, std::vector<uint32_t>, BranchCompare>(BranchCompare(this));
     order_.clear();
@@ -58,6 +58,34 @@ bool SimplifyCT::isCandidate(const Branch& br) {
         return false;
     }
     return false;
+}
+
+void SimplifyCT::init() {
+    branches.resize(data->noArcs);
+    nodes.resize(data->noNodes);
+    for (uint32_t i = 0; i < branches.size(); i++) {
+        branches[i].from = data->arcs[i].from;
+        branches[i].to = data->arcs[i].to;
+        branches[i].parent = -1;
+        branches[i].arcs.push_back(i);
+
+        nodes[branches[i].from].next.push_back(i);
+        nodes[branches[i].to].prev.push_back(i);
+    }
+
+    fn_->resize(branches.size());
+    removed.resize(branches.size(), false);
+    invalid.resize(branches.size(), false);
+    inq.resize(branches.size(), false);
+
+    vArray.resize(nodes.size());
+}
+
+void SimplifyCT::setSimplificationFunction(std::shared_ptr<SimFunction> f) {
+    simFn = f;
+    if (simFn->simType_ == SimFunction::SimType::Persistence) {
+        fn_ = std::dynamic_pointer_cast<Persistence>(f)->fn_;
+    }
 }
 
 void SimplifyCT::initSimplification(std::shared_ptr<SimFunction> f) {
@@ -295,44 +323,7 @@ void SimplifyCT::simplify(const std::vector<uint32_t>& order, const float thresh
     }
 }
 
-void SimplifyCT::simplify(const float value) {
-    if (!simFn) return;
-    if (simFn->simType_ != SimFunction::SimType::Persistence) return;
-
-    const auto persistenceFunction = std::dynamic_pointer_cast<contourtree::Persistence>(simFn);
-
-    queue = std::priority_queue<uint32_t, std::vector<uint32_t>, contourtree::BranchCompare>{};
-
-    // Add branches with persistence lower than value to queue
-    for (int i{0}; i < branches.size(); ++i) {
-        const auto persistence = persistenceFunction->fn_->at(i);
-
-        if (persistence < value) {
-            queue.push(i);
-        }
-    }
-
-    // Do the persistence simplification
-    while (!queue.empty()) {
-        uint32_t ano = queue.top();
-        queue.pop();
-        inq[ano] = false;
-        if (!removed[ano]) {
-            if (invalid[ano]) {
-                simFn->update(branches, ano);
-                invalid[ano] = false;
-                addToQueue(ano);
-            } else {
-                if (isCandidate(branches[ano])) {
-                    removeArc(ano);
-                    order_.push_back(ano);
-                }
-            }
-        }
-    }
-}
-
-void SimplifyCT::computeWeights(const bool normalize) {
+void SimplifyCT::computeWeights() {
     weights_.clear();
     for (size_t i = 0; i < order_.size(); i++) {
         uint32_t ano = order_.at(i);
@@ -340,13 +331,11 @@ void SimplifyCT::computeWeights(const bool normalize) {
         weights_.push_back(val);
     }
 
-    if (normalize) {
-        // normalize weights_
-        float maxWt = weights_.at(weights_.size() - 1);
-        if (maxWt == 0) maxWt = 1;
-        for (int i = 0; i < weights_.size(); i++) {
-            weights_[i] /= maxWt;
-        }
+    // normalize weights_
+    float maxWt = weights_.at(weights_.size() - 1);
+    if (maxWt == 0) maxWt = 1;
+    for (int i = 0; i < weights_.size(); i++) {
+        weights_[i] /= maxWt;
     }
 }
 

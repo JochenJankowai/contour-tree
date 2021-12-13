@@ -8,12 +8,12 @@
 namespace contourtree {
 
 struct Branch {
-    uint32_t from; //< Node id
-    uint32_t to;//< Node id
+    uint32_t from;  //< Node id
+    uint32_t to;    //< Node id
     std::vector<uint32_t> arcs;
 
-    uint32_t parent; //<  Parent branch
-    std::vector<uint32_t> children; // Child branches
+    uint32_t parent;                 //<  Parent branch
+    std::vector<uint32_t> children;  // Child branches
 };
 
 class SimFunction {
@@ -30,6 +30,7 @@ public:
     virtual float getBranchWeight(uint32_t brNo) = 0;
 
     SimType simType_;
+    std::shared_ptr<const std::vector<float>> fnVals_; /**< Function values of input data.*/
 };
 
 }  // namespace contourtree
