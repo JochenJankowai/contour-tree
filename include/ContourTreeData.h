@@ -14,13 +14,15 @@ namespace contourtree {
  * Stores indices to next and prev branches. Indices' target is SimplifyCT::branches
  */
 struct Node {
-    std::vector<uint32_t> next; /**< Indices of children branches. */
-    std::vector<uint32_t> prev; /**< Indices of parent branches. */
+    std::vector<uint32_t>
+        next; /**< Arcs with the other end node having function value higher than the node. */
+    std::vector<uint32_t>
+        prev; /**< Arcs with the other end node having function value lower  than the node. */
 };
 
 struct Arc {
-    uint32_t from; 
-    uint32_t to;
+    uint32_t from; /**< Index of node with lower  value*/
+    uint32_t to;   /**< Index of node with higher value*/
     uint32_t id;
 };
 
@@ -49,7 +51,8 @@ public:
 
     std::vector<char> type; /**< Node types, i.e., minimum, maximum, saddle. */
 
-    std::vector<int64_t> nodeVerts; /**< nodeVerts[i] = data point corresponding to the i^th node. */
+    std::vector<int64_t>
+        nodeVerts; /**< nodeVerts[i] = data point corresponding to the i^th node. */
 
     std::unordered_map<int64_t, uint32_t> nodeMap; /**< Maps the vertex ids (points in the input
                                                       data) to the node ids of the contour tree. */

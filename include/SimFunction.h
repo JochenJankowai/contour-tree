@@ -8,8 +8,8 @@
 namespace contourtree {
 
 struct Branch {
-    uint32_t from;  //< Node id
-    uint32_t to;    //< Node id
+    uint32_t from; /**< Node id */
+    uint32_t to;   /**< Node id */
     std::vector<uint32_t> arcs;
 
     uint32_t parent;                 //<  Parent branch
@@ -28,6 +28,9 @@ public:
     virtual void branchRemoved(std::vector<Branch>& br, uint32_t brNo,
                                std::vector<bool>& invalid) = 0;
     virtual float getBranchWeight(uint32_t brNo) = 0;
+
+    virtual float getMinValue() const = 0;
+    virtual float getMaxValue() const = 0;
 
     SimType simType_;
     std::shared_ptr<const std::vector<float>> fnVals_; /**< Function values of input data.*/

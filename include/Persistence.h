@@ -23,8 +23,11 @@ public:
      */
     virtual float getBranchWeight(uint32_t brNo) final;
 
-    float getMinPersistence() const { return *std::min_element(std::begin(*fn_), std::end(*fn_)); }
-    float getMaxPersistence() const { return *std::max_element(std::begin(*fn_), std::end(*fn_)); }
+    [[nodiscard]]
+    float getMinValue() const final { return *std::min_element(std::begin(*fn_), std::end(*fn_)); }
+
+    [[nodiscard]]
+    float getMaxValue() const final { return *std::max_element(std::begin(*fn_), std::end(*fn_)); }
 
 public:
     std::shared_ptr<std::vector<float>> fn_; /**< Persistence values per arc.*/

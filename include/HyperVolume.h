@@ -3,6 +3,7 @@
 
 #include "SimFunction.h"
 #include "ContourTreeData.h"
+#include <algorithm>
 
 namespace contourtree {
 
@@ -17,6 +18,12 @@ public:
     virtual void branchRemoved(std::vector<Branch>& br, uint32_t brNo,
                                std::vector<bool>& invalid) final;
     virtual float getBranchWeight(uint32_t brNo) final;
+
+    [[nodiscard]]
+    float getMinValue() const final { return *std::min_element(std::begin(*fn_), std::end(*fn_)); }
+
+    [[nodiscard]]
+    float getMaxValue() const final { return *std::max_element(std::begin(*fn_), std::end(*fn_)); }
 
 private:
     float volume(const std::vector<Branch> &br, int brNo);
