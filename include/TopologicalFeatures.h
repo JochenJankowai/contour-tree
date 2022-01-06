@@ -26,7 +26,8 @@ public:
      * minima/highest maxima.
      */
     template <contourtree::TreeType T, typename ValueType>
-    std::vector<Feature> getNExtremalArcFeatures(int n, float thresold, const std::vector<ValueType>& functionValues) const;
+    std::vector<Feature> getNExtremalArcFeatures(
+        int n, float thresold, const std::vector<ValueType>& functionValues) const;
 
 public:
     std::shared_ptr<const ContourTreeData> ctdata;
@@ -52,19 +53,18 @@ std::vector<Feature> TopologicalFeatures::getNExtremalArcFeatures(
     /**
      * For split trees we look at feature.from, for join trees we look at feature.to
      */
-    for (const auto& feature : features) {
-        if constexpr (T == contourtree::TreeType::SplitTree) {
-            std::sort(std::begin(features), std::end(features),
-                      [&functionValues](const auto& feature1, const auto& feature2) {
-                          return functionValues[feature1.from] < functionValues[feature2.from];
-                      });
-        }
-        if constexpr (T == contourtree::TreeType::JoinTree) {
-            std::sort(std::begin(features), std::end(features),
-                      [&functionValues](const auto& feature1, const auto& feature2) {
-                          return functionValues[feature1.to] > functionValues[feature2.to];
-                      });
-        }
+
+    if constexpr (T == contourtree::TreeType::SplitTree) {
+        std::sort(std::begin(features), std::end(features),
+                  [&functionValues](const auto& feature1, const auto& feature2) {
+                      return functionValues[feature1.from] < functionValues[feature2.from];
+                  });
+    }
+    if constexpr (T == contourtree::TreeType::JoinTree) {
+        std::sort(std::begin(features), std::end(features),
+                  [&functionValues](const auto& feature1, const auto& feature2) {
+                      return functionValues[feature1.to] > functionValues[feature2.to];
+                  });
     }
 
     if (features.size() > n) {
