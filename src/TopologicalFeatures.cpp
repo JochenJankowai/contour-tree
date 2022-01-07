@@ -53,7 +53,7 @@ void TopologicalFeatures::addFeature(const SimplifyCT& sim, uint32_t bno,
     features.push_back(f);
 }
 
-std::vector<Feature> TopologicalFeatures::getPartitionedExtremaFeatures(int topk, float th) const {
+std::pair<contourtree::SimplifyCT,std::vector<Feature>> TopologicalFeatures::getPartitionedExtremaFeatures(int topk, float th) const {
     std::vector<Feature> features;
 
     std::set<size_t> featureSet;
@@ -95,10 +95,11 @@ std::vector<Feature> TopologicalFeatures::getPartitionedExtremaFeatures(int topk
         }
         features.push_back(f);
     }
-    return features;
+    return {*sim, features};
 }
 
-std::vector<Feature> TopologicalFeatures::getArcFeatures(int topk, float th) const {
+std::pair<contourtree::SimplifyCT, std::vector<Feature>> TopologicalFeatures::getArcFeatures(
+    int topk, float th) const {
     SimplifyCT sim;
     sim.setInput(ctdata);
 
@@ -141,7 +142,7 @@ std::vector<Feature> TopologicalFeatures::getArcFeatures(int topk, float th) con
         }
         features.push_back(f);
     }
-    return features;
+    return {sim, features};
 }
 
 

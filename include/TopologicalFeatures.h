@@ -19,15 +19,19 @@ public:
     void loadDataFromArrays(std::shared_ptr<const ContourTreeData> input_ctdata,
                             const std::vector<uint32_t>& input_order,
                             const std::vector<float>& input_weights, bool partition = false);
-    std::vector<Feature> getArcFeatures(int topk = -1, float th = 0) const;
-    std::vector<Feature> getPartitionedExtremaFeatures(int topk = -1, float th = 0) const;
+    [[nodiscard]] std::pair<contourtree::SimplifyCT, std::vector<Feature>> getArcFeatures(
+        int topk = -1, float th = 0) const;
+    [[nodiscard]] std::pair<contourtree::SimplifyCT, std::vector<Feature>>
+    getPartitionedExtremaFeatures(int topk = -1, float th = 0) const;
+
     /**
      * Performs a persistence simplification and extracts the arcs incident to the n lowest
      * minima/highest maxima.
      */
     template <contourtree::TreeType T, typename ValueType>
-    std::vector<Feature> getNExtremalArcFeatures(
-        int n, float thresold, const std::vector<ValueType>& functionValues) const;
+    [[nodiscard]] std::pair<contourtree::SimplifyCT, std::vector<Feature>>
+    getNExtremalArcFeatures(int n, float thresold,
+                            const std::vector<ValueType>& functionValues) const;
 
 public:
     std::shared_ptr<const ContourTreeData> ctdata;
@@ -46,9 +50,10 @@ private:
 };
 
 template <contourtree::TreeType T, typename ValueType>
-std::vector<Feature> TopologicalFeatures::getNExtremalArcFeatures(
-    int n, float thresold, const std::vector<ValueType>& functionValues) const {
-    auto features = getArcFeatures(-1, thresold);
+std::pair<contourtree::SimplifyCT, std::vector<Feature>>
+TopologicalFeatures::getNExtremalArcFeatures(int n, float thresold,
+                                             const std::vector<ValueType>& functionValues) const {
+    auto [simplifyCT, features] = getArcFeatures(-1, thresold);
 
     /**
      * For split trees we look at feature.from, for join trees we look at feature.to
@@ -71,7 +76,7 @@ std::vector<Feature> TopologicalFeatures::getNExtremalArcFeatures(
         features.resize(n);
     }
 
-    return features;
+    return {simplifyCT, features};
 }
 
 }  // namespace contourtree
