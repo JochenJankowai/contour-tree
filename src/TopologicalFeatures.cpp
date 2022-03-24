@@ -44,7 +44,7 @@ void TopologicalFeatures::addFeature(const SimplifyCT& sim, uint32_t bno,
         }
         featureSet.insert(b);
         Branch br = sim.branches.at(b);
-        f.arcs.insert(f.arcs.end(), br.arcs.data(), br.arcs.data() + br.arcs.size());
+        f.arcs.insert(f.arcs.end(), br.arcs_.data(), br.arcs_.data() + br.arcs_.size());
         for (int i = 0; i < br.children.size(); i++) {
             uint32_t bc = br.children.at(i);
             queue.push_back(bc);
@@ -72,7 +72,7 @@ std::pair<contourtree::SimplifyCT,std::vector<Feature>> TopologicalFeatures::get
 
     for (int _i = 0; _i < topk; _i++) {
         size_t i = order.size() - _i - 1;
-        Branch b1 = sim->branches.at(order[i]);
+        Branch b1 = sim->branches[order[i]];
         Feature f;
         f.from = ctdata->nodeVerts[b1.from];
         f.to = ctdata->nodeVerts[b1.to];
@@ -80,17 +80,16 @@ std::pair<contourtree::SimplifyCT,std::vector<Feature>> TopologicalFeatures::get
         size_t bno = order[i];
         std::deque<size_t> queue;
         queue.push_back(bno);
-        while (queue.size() > 0) {
+        while (!queue.empty()) {
             size_t b = queue.front();
             queue.pop_front();
             if (b != bno && featureSet.find(b) != featureSet.end()) {
                 continue;
             }
-            Branch br = sim->branches.at(b);
-            f.arcs.insert(f.arcs.end(), br.arcs.data(), br.arcs.data() + br.arcs.size());
+            Branch br = sim->branches[b];
+            f.arcs.insert(f.arcs.end(), br.arcs_.data(), br.arcs_.data() + br.arcs_.size());
             for (int i = 0; i < br.children.size(); i++) {
-                int bc = br.children.at(i);
-                queue.push_back(bc);
+                queue.emplace_back(br.children[i]);
             }
         }
         features.push_back(f);
@@ -118,7 +117,7 @@ std::pair<contourtree::SimplifyCT, std::vector<Feature>> TopologicalFeatures::ge
         if (sim.removed[i]) {
             continue;
         }
-        Branch b1 = sim.branches.at(i);
+        Branch b1 = sim.branches[i];
         Feature f;
         f.from = ctdata->nodeVerts[b1.from];
         f.to = ctdata->nodeVerts[b1.to];
@@ -126,18 +125,17 @@ std::pair<contourtree::SimplifyCT, std::vector<Feature>> TopologicalFeatures::ge
         size_t bno = i;
         std::deque<size_t> queue;
         queue.push_back(bno);
-        while (queue.size() > 0) {
+        while (!queue.empty()) {
             size_t b = queue.front();
             queue.pop_front();
             if (b != bno && featureSet.find(b) != featureSet.end()) {
                 // this cannot happen
                 assert(false);
             }
-            Branch br = sim.branches.at(b);
-            f.arcs.insert(f.arcs.end(), br.arcs.data(), br.arcs.data() + br.arcs.size());
+            Branch br = sim.branches[b];
+            f.arcs.insert(f.arcs.end(), br.arcs_.data(), br.arcs_.data() + br.arcs_.size());
             for (int i = 0; i < br.children.size(); i++) {
-                int bc = br.children.at(i);
-                queue.push_back(bc);
+                queue.emplace_back(br.children[i]);
             }
         }
         features.push_back(f);

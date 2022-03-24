@@ -39,11 +39,11 @@ protected:
     void processVertexSplit(int64_t v);
 
 public:
-    std::shared_ptr<const ScalarFunction> data;
+    std::shared_ptr<const ScalarFunction> data; ///< Volume data
     std::vector<int64_t> cpMap;
     DisjointSets<int64_t> nodes;
 
-    int64_t noVertices;
+    int64_t noVertices;                         ///< Number of vertices
     int maxStar;
     std::vector<int64_t> prev;
     std::vector<int64_t> next;

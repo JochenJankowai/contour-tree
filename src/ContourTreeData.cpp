@@ -14,7 +14,7 @@ ContourTreeData::ContourTreeData(std::shared_ptr<const ContourTree> CT)
     : fnVals(std::make_shared<std::vector<float>>()) {
     noNodes = CT->nodeids.size();
     noArcs = CT->arcNo;
-    this->loadData(CT->nodeids, CT->nodefns, CT->nodeTypes, CT->arcs);
+    this->loadData(CT->nodeids, CT->nodefns, CT->nodeTypes, CT->arcs_);
 }
 
 ContourTreeData::ContourTreeData(std::shared_ptr<const MergeTree> MT)

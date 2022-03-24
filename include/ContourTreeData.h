@@ -45,7 +45,7 @@ public:
 
     std::vector<Node> nodes; /**< List of nodes sorted by function value. */
 
-    std::vector<Arc> arcs; /**< List of arcs. */
+    std::vector<Arc> arcs; /**< List of arcs_. */
 
     std::shared_ptr<std::vector<float>> fnVals; /**< Sorted function values. */
 

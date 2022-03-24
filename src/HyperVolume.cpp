@@ -52,21 +52,21 @@ void HyperVolume::init(std::shared_ptr<std::vector<float>>fn, std::vector<Branch
 
 void HyperVolume::update(const std::vector<Branch> &br, uint32_t brNo) {
     brVol[brNo] = 0;
-    for(int i = 0;i < br[brNo].arcs.size();i ++) {
-        brVol[brNo] += vol[br[brNo].arcs.at(i)];
+    for(int i = 0;i < br[brNo].arcs_.size();i ++) {
+        brVol[brNo] += vol[br[brNo].arcs_.at(i)];
     }
     for(int i = 0;i < br[brNo].children.size();i ++) {
         int child = br[brNo].children.at(i);
         brVol[brNo] += volume(br,child);
     }
     float fnDiff = fnVals_->at(br[brNo].to) - fnVals_->at(br[brNo].from);
-    fn_->at(brNo) = fnDiff * brVol[brNo];
+    fn_->at(brNo) = fnDiff * brVol[brNo]; // Volume of branch times saddle-minimum
 }
 
 float HyperVolume::volume(const std::vector<Branch> &br, int brNo) {
     float val = 0;
-    for(int i = 0;i < br[brNo].arcs.size();i ++) {
-        val += vol[br[brNo].arcs.at(i)];
+    for(int i = 0;i < br[brNo].arcs_.size();i ++) {
+        val += vol[br[brNo].arcs_.at(i)];
     }
     for(int i = 0;i < br[brNo].children.size();i ++) {
         int child = br[brNo].children.at(i);

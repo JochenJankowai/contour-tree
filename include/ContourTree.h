@@ -15,8 +15,8 @@ class ContourTree
 public:
     struct Node {
         int64_t v;
-        std::vector<int64_t> next; //< Vertex id
-        std::vector<int64_t> prev;//< Vertex id
+        std::vector<int64_t> next; ///< Vertex id
+        std::vector<int64_t> prev; ///< Vertex id
     };
 
 public:
@@ -43,10 +43,10 @@ public:
     std::vector<int64_t> nodeids;
     std::vector<scalar_t> nodefns;
     std::vector<char> nodeTypes;
-    std::vector<int64_t> arcs;
+    std::vector<int64_t> arcs_;
 
     uint32_t arcNo;
-    int64_t nv;
+    int64_t nv;                                 ///< Number of vertices
 };
 
 }

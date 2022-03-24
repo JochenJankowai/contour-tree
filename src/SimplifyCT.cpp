@@ -4,6 +4,8 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
+#include <execution>
+#include <numeric>
 
 namespace contourtree {
 
@@ -42,15 +44,14 @@ void SimplifyCT::addToQueue(uint32_t ano) {
 bool SimplifyCT::isCandidate(const Branch& br) {
     uint32_t from = br.from;
     uint32_t to = br.to;
-    if (nodes[from].prev.size() == 0) {
+    if (nodes[from].prev.empty()) {
         // minimum
         if (nodes[to].prev.size() > 1) {
             return true;
-        } else {
-            return false;
         }
+            return false;
     }
-    if (nodes[to].next.size() == 0) {
+    if (nodes[to].next.empty()) {
         // maximum
         if (nodes[from].next.size() > 1) {
             return true;
@@ -67,7 +68,7 @@ void SimplifyCT::init() {
         branches[i].from = data->arcs[i].from;
         branches[i].to = data->arcs[i].to;
         branches[i].parent = -1;
-        branches[i].arcs.push_back(i);
+        branches[i].arcs_.push_back(i);
 
         nodes[branches[i].from].next.push_back(i);
         nodes[branches[i].to].prev.push_back(i);
@@ -95,7 +96,7 @@ void SimplifyCT::initSimplification(std::shared_ptr<SimFunction> f) {
         branches[i].from = data->arcs[i].from;
         branches[i].to = data->arcs[i].to;
         branches[i].parent = -1;
-        branches[i].arcs.push_back(i);
+        branches[i].arcs_.push_back(i);
 
         nodes[branches[i].from].next.push_back(i);
         nodes[branches[i].to].prev.push_back(i);
@@ -151,11 +152,11 @@ void SimplifyCT::removeArc(uint32_t ano) {
     uint32_t from = br.from;
     uint32_t to = br.to;
     uint32_t mergedVertex = -1;
-    if (nodes[from].prev.size() == 0) {
+    if (nodes[from].prev.empty()) {
         // minimum
         mergedVertex = to;
     }
-    if (nodes[to].next.size() == 0) {
+    if (nodes[to].next.empty()) {
         // maximum
         mergedVertex = from;
     }
@@ -169,7 +170,7 @@ void SimplifyCT::removeArc(uint32_t ano) {
     if (nodes[mergedVertex].prev.size() == 1 && nodes[mergedVertex].next.size() == 1) {
         mergeVertex(mergedVertex);
     }
-    if (simFn != NULL) simFn->branchRemoved(branches, ano, invalid);
+    if (simFn) simFn->branchRemoved(branches, ano, invalid);
 }
 
 void SimplifyCT::mergeVertex(uint32_t v) {
@@ -206,7 +207,7 @@ void SimplifyCT::mergeVertex(uint32_t v) {
                 nodes[branches[next].from].next[i] = next;
             }
         }
-        if (simFn != NULL && !inq[next]) {
+        if (simFn && !inq[next]) {
             addToQueue(next);
         }
     }
@@ -217,9 +218,9 @@ void SimplifyCT::mergeVertex(uint32_t v) {
         assert(branches[ch].parent == rem);
         branches[ch].parent = a;
     }
-    //    branches[a].arcs << branches[rem].arcs;
-    branches[a].arcs.insert(branches[a].arcs.end(), branches[rem].arcs.begin(),
-                            branches[rem].arcs.end());
+    //    branches[a].arcs_ << branches[rem].arcs_;
+    branches[a].arcs_.insert(branches[a].arcs_.end(), branches[rem].arcs_.begin(),
+                            branches[rem].arcs_.end());
     for (int i = 0; i < vArray[v].size(); i++) {
         uint32_t aa = vArray[v].at(i);
         branches[a].children.push_back(aa);
@@ -259,6 +260,8 @@ void SimplifyCT::simplify(std::shared_ptr<SimFunction> simFn) {
             root++;
         }
     }
+
+    std::cout << "Simplification done." << std::endl;
 }
 
 void SimplifyCT::simplify(const std::vector<uint32_t>& order, int topk, float threshold,
@@ -266,12 +269,16 @@ void SimplifyCT::simplify(const std::vector<uint32_t>& order, int topk, float th
     std::cout << "init" << std::endl;
     initSimplification(NULL);
 
-    std::cout << "going over order_ queue" << std::endl;
+    std::cout << "going over order queue" << std::endl;
     for (int i = 0; i < order.size(); i++) {
         inq[order.at(i)] = true;
     }
+    
+#define NEWCODE 0
+
+#if( NEWCODE != 1)
     if (topk > 0) {
-        size_t ct = order.size() - topk;
+        const auto ct = order.size() - topk;
         for (int i = 0; i < ct; i++) {
             uint32_t ano = order.at(i);
             if (!isCandidate(branches[ano])) {
@@ -296,6 +303,43 @@ void SimplifyCT::simplify(const std::vector<uint32_t>& order, int topk, float th
             removeArc(ano);
         }
     }
+
+#else
+    if (topk > 0) {
+        const auto ct = order.size() - topk;
+        std::vector indices(ct, 0);
+        std::iota(std::begin(indices), std::end(indices), 0);
+        std::for_each(std::execution::par_unseq, std::begin(indices), std::end(indices),
+                      [&](const auto i) {
+                          const auto ano = order.at(i);
+                          if (!isCandidate(branches[ano])) {
+                              std::cout << "failing candidate test" << std::endl;
+                              assert(false);
+                          }
+                          inq[ano] = false;
+                          removeArc(ano);
+                      });
+    } else if (threshold > 0.0f) {
+        std::vector indices(order.size()-1, 0);
+        std::iota(std::begin(indices), std::end(indices), 0);
+        std::for_each(std::execution::par_unseq, std::begin(indices), std::end(indices),
+                      [&](const auto i) {
+                          const auto ano = order.at(i);
+                          if (!isCandidate(branches[ano])) {
+                              std::cout << "failing candidate test" << std::endl;
+                              assert(false);
+                          }
+                          float fn = weights.at(i);
+                          if (fn > threshold) {
+                              return;
+                          }
+                          inq[ano] = false;
+                          removeArc(ano);
+                      });
+    }
+        
+#endif
+    std::cout << "Simplification done." << std::endl;
 }
 
 void SimplifyCT::simplify(const std::vector<uint32_t>& order, const float threshold,
@@ -321,6 +365,8 @@ void SimplifyCT::simplify(const std::vector<uint32_t>& order, const float thresh
         inq[ano] = false;
         removeArc(ano);
     }
+
+    std::cout << "Simplification done." << std::endl;
 }
 
 void SimplifyCT::computeWeights() {

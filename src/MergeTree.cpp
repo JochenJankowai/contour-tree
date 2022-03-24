@@ -8,6 +8,7 @@
 #include <parallel/algorithm>
 #else
 #include <algorithm>
+#include <execution>
 #endif
 
 namespace contourtree {
@@ -20,8 +21,8 @@ MergeTree::MergeTree()
 void MergeTree::computeTree(std::shared_ptr<const ScalarFunction> data, TreeType type) {
     treeType_ = type;
     this->data = data;
-    std::chrono::time_point<std::chrono::system_clock> ct, en;
-    ct = std::chrono::system_clock::now();
+    
+    const auto ct = std::chrono::high_resolution_clock::now();
     setupData();
     orderVertices();
     switch(type) {
@@ -46,8 +47,8 @@ void MergeTree::computeTree(std::shared_ptr<const ScalarFunction> data, TreeType
         assert(false);
     }
 
-    en = std::chrono::system_clock::now();
-    long time = std::chrono::duration_cast<std::chrono::milliseconds>(en-ct).count();
+    const auto en = std::chrono::high_resolution_clock::now();
+    const auto time = std::chrono::duration_cast<std::chrono::milliseconds>(en-ct).count();
 
     std::cout << "Time taken to compute tree : " << time << "ms" << std::endl;
 }
@@ -74,7 +75,7 @@ void MergeTree::setupData() {
 void MergeTree::orderVertices() {
     std::cout << "ordering vertices" << std::endl;
 #if defined (WIN32)
-    std::sort(sv.begin(),sv.end(),Compare(data));
+    std::sort(std::execution::par, sv.begin(),sv.end(),Compare(data));
 #else
     __gnu_parallel::sort(sv.begin(),sv.end(),Compare(data));
 #endif
